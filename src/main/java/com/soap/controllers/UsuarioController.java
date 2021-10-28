@@ -1,7 +1,7 @@
 package com.soap.controllers;
 
 import com.soap.config.Conexion;
-import com.soap.models.Client;
+import com.soap.models.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,26 +11,26 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ClientController extends Conexion {
 
+public class UsuarioController  extends Conexion  {
 	Connection con = null;
 	PreparedStatement ps = null;
 	ResultSet rs = null;
 
-	// Obtener todos los clientes de la base de datos
-	public List<Client> findAll() throws SQLException {
+	// Obtener todos los usuarios de la base de datos
+	public List<Usuario> findAll() throws SQLException {
 		try {
-			String sql = "SELECT * FROM CLIENTS";
-			List<Client> lista = new ArrayList<Client>();
+			String sql = "SELECT * FROM usuario";
+			List<Usuario> lista = new ArrayList<Usuario>();
 
 			con = conectar();
 			ps = con.prepareStatement(sql);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Client client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
-
-				lista.add(client);
+				//Usuario usuario = new Usuario(int idUsuario, String razonSocial, int idUsuarioRef);
+				Usuario usuario = new Usuario(rs.getInt(1), rs.getString(2), rs.getInt(3));
+				lista.add(usuario);
 			}
 			return lista;
 		} catch (SQLException ex) {
@@ -43,23 +43,23 @@ public class ClientController extends Conexion {
 		}
 	}
 
-	// Obtener un cliente por su id
-	public Client findById(int id_client) throws SQLException {
+	// Obtener un Usuario por su id
+	public Usuario findById(int id) throws SQLException {
 		try {
-			String sql = "SELECT * FROM CLIENTS WHERE id = " + id_client + "";
+			String sql = "SELECT * FROM usuario WHERE idUsuario = " + id + "";
 
-			Client client = null;
+			Usuario usuario = null;
 
 			con = conectar();
 			ps = con.prepareStatement(sql);
 			rs = ps.executeQuery();
 
 			if (rs.next()) {
-				client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
+				usuario = new Usuario(rs.getInt(1), rs.getString(2), rs.getInt(3));
 
 			}
 
-			return client;
+			return usuario;
 		} catch (SQLException ex) {
 			Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
@@ -70,19 +70,19 @@ public class ClientController extends Conexion {
 		}
 	}
 
-	// Crear un nuevo cliente
-	public boolean create(Client client) throws SQLException {
+	// Crear un nuevo usuario
+	public boolean create(Usuario usuario) throws SQLException {
 		try {
-			String sql = "INSERT INTO CLIENTS VALUES(null, ?, ?, ?)";
+			String sql = "INSERT INTO usuario VALUES(null, ?, ?)";
 
 			boolean respuesta = false;
 
 			con = conectar();
 
 			ps = con.prepareStatement(sql);
-			ps.setString(1, client.getName());
-			ps.setString(2, client.getLastname());
-			ps.setString(3, client.getDni());
+			ps.setString(1, usuario.getRazonSocial());
+			ps.setInt(2, usuario.getIdUsuarioRef());
+			
 
 			if (ps.executeUpdate() == 1) {
 				respuesta = true;
@@ -98,20 +98,19 @@ public class ClientController extends Conexion {
 		}
 	}
 
-	// Actualizar un cliente por su id
-	public boolean update(Client client) throws SQLException {
+	// Actualizar un usuario por su id
+	public boolean update(Usuario usuario) throws SQLException {
 		try {
-			String sql = "UPDATE CLIENTS SET name = ?, lastname = ?, dni = ? WHERE id = ?";
+			String sql = "UPDATE usuario SET razonSocial = ?, idUsuarioRef = ? WHERE idUsuario = ?";
 
 			boolean respuesta = false;
 
 			con = conectar();
 
 			ps = con.prepareStatement(sql);
-			ps.setString(1, client.getName());
-			ps.setString(2, client.getLastname());
-			ps.setString(3, client.getDni());
-			ps.setInt(4, client.getId());
+			ps.setString(1, usuario.getRazonSocial());
+			ps.setInt(2, usuario.getIdUsuarioRef());
+			ps.setInt(3, usuario.getIdUsuario());
 
 			if (ps.executeUpdate() == 1) {
 				respuesta = true;
@@ -127,10 +126,10 @@ public class ClientController extends Conexion {
 		}
 	}
 
-	// Eliminar un cliente por su id
-	public boolean delete(int id_client) throws SQLException {
+	// Eliminar un usuario por su id
+	public boolean delete(int id) throws SQLException {
 		try {
-			String sql = "DELETE FROM CLIENTS WHERE id = " + id_client + "";
+			String sql = "DELETE FROM usuario WHERE idUsuario = " + id + "";
 
 			boolean respuesta = false;
 
